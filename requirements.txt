@@ -1,0 +1,6 @@
+streamlit
+google-cloud-storage
+google-generativeai
+langchain-community
+google-genai
+google-cloud-bigquery

@@ -1,0 +1,71 @@
+# ---------------------------------------------------------------------------
+# # SQL & bq commands to create and load data.
+# 
+#     
+#     CREATE OR REPLACE MODEL `UserInput.Embeddings`
+#     REMOTE WITH CONNECTION `us.embedding_conn`
+#     OPTIONS (ENDPOINT = 'text-embedding-005');
+#     
+
+#      bq load \
+#      --source_format=CSV \
+#      UserInput.user_input \
+#      gs://gcp-123243500/code.csv \
+#      schema.json
+
+#     
+# #     CREATE OR REPLACE TABLE `UserInput.user_input_embedded` AS
+#       SELECT *
+#       FROM ML.GENERATE_EMBEDDING(
+#      MODEL `UserInput.Embeddings`,
+#      (SELECT code AS content FROM `UserInput.user_input`)
+#      );
+#     
+#     
+# #     CREATE OR REPLACE TABLE `UserInput.vector_search_result` AS
+#       SELECT
+#       query.query,
+#       base.content
+#       FROM
+#        VECTOR_SEARCH(
+#         TABLE `UserInput.user_input_embedded`,
+#         'ml_generate_embedding_result',
+#         (
+#             SELECT
+#                 ml_generate_embedding_result,
+#                 content AS query
+#             FROM
+#                 ML.GENERATE_EMBEDDING(
+#                     MODEL `UserInput.Embeddings`,
+#                     (SELECT 'code' AS content)
+#                 )
+#         ),
+#         top_k => 5,
+#         options => '{"fraction_lists_to_search": 0.01}'
+#     );
+#     
+#    
+#    SELECT
+#     ml_generate_text_llm_result AS generated
+#    FROM
+#     ML.GENERATE_TEXT(
+#         MODEL `UserInput.Gemini`,
+#         (
+#             SELECT
+#                 CONCAT(
+#                     'Define what users want',
+#                     STRING_AGG(FORMAT('code: %s', base.content), ',\n')
+#                 ) AS prompt
+#             FROM
+#                 `UserInput.vector_search_result` AS base
+#         ),
+#         STRUCT(
+#             0.4 AS temperature,
+#             300 AS max_output_tokens,
+#             0.5 AS top_p,
+#             5 AS top_k,
+#             TRUE AS flatten_json_output
+#         )
+#     );
+
+# -----------------------------------------------------------------------------------
