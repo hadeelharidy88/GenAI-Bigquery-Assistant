@@ -1,0 +1,27 @@
+﻿import math
+class MathematicalOperation:
+"def calculate(self, *args):"
+"raise NotImplementedError(""Subclasses should implement this method."")"
+class Addition(MathematicalOperation):
+"def calculate(self, a, b):"
+return a + b
+class Subtraction(MathematicalOperation):
+"def calculate(self, a, b):"
+return a - b
+class SquareRoot(MathematicalOperation):
+"def calculate(self, a):"
+if a < 0:
+"raise ValueError(""Cannot take the square root of a negative number."")"
+return math.sqrt(a)
+class Modulus(MathematicalOperation):
+"def calculate(self, a, b):"
+return a % b
+"if __name__ == ""__main__"":"
+add = Addition()
+subtract = Subtraction()
+sqrt = SquareRoot()
+mod = Modulus()
+"print(""Addition of 10 and 5:"", add.calculate(10, 5))"
+"print(""Subtraction of 10 and 5:"", subtract.calculate(10, 5))"
+"print(""Square root of 25:"", sqrt.calculate(25))"
+"print(""Modulus of 10 and 3:"", mod.calculate(10, 3))"
